@@ -5,6 +5,8 @@
 1. Data Replication is an app concern. Small clusters shouldn't have to manage the overhead of distributed CSI providers.
 1. One workflow. Always download all dependencies and go.
 1. Allow whitelabeling
+1. Files not flags
+1. Focus on maintainability, not availability.
 
 ## Batteries Included
 1. RKE2
@@ -12,6 +14,14 @@
 1. KOTS
 1. Velero
 1. Troubleshoot
+1. Host Preflights
+
+## Problems this solves
+
+
+## Problems this doesn't solve
+
+
 
 ## TODO:
 - [X] Finish online install
