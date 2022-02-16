@@ -1,5 +1,11 @@
 # Architecture
 
+## How should an installation look?
+
+`r8d install server`
+
+Any customizations go directorly into the RKE yaml as would be an ordinary installation.
+
 ## Repo Structure
 - cmd
     - r8d-installer: installer command
@@ -61,7 +67,6 @@ flowchart LR
 ### Unanswered
 1. Will removing/modifying a file in the manifests directory cause RKE2 to update (useful for updates)? ?
 
-
 ## Do we need an interface for addons?
 - No, because we should never need to add new ones.
 
@@ -71,21 +76,8 @@ flowchart LR
 - docker images
 - manifests (local path provisioner)
 
-## What's the best way to pull in the assets required? Can this be abstracted?
--> No, every repo has a different struct that keeps these from being loaded.
-- Go CLI?
-- Github Actions?
-- Script?
-- Makefile?
-
 ## Do we store dependencies in the repo?
 No, this is probably a bad idea, but the build command needs to generate these to include in the overall binary.
-
-## How should an installation look?
-
-`r8d install server`
-
-Any customizations go directorly into the RKE yaml as would be an ordinary installation.
 
 
 ## What is the ideal workflow for updates?

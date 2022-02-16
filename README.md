@@ -17,7 +17,8 @@
 1. Host Preflights
 
 ## Problems this solves
-
+- Minimizes the amount of memorizing flags to enter into the cluster install command.
+- Allows the output of the installer to be logged to file while still printing to STDOUT
 
 ## Problems this doesn't solve
 
