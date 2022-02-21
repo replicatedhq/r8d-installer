@@ -1,3 +1,7 @@
 assets
 cloud-credentials
 velero-credentials
+
+.vscode
+
+bin

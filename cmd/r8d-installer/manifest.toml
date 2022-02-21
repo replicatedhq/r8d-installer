@@ -1,0 +1,7 @@
+# Generated file, do not modify.  Run the `r8d-deps update` command from `make` or \
+# the github action to generate updated values.
+rke2="v1.23.3+rke2r1"
+kots="v1.63.0"
+openebs="v3.1.0"
+velero="v1.8.0"
+
