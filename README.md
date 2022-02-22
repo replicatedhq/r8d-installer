@@ -9,7 +9,7 @@
 1. Files not flags. Don't intercept configuration for components, like RKE2, in the installer.
 1. Focus on maintainability, not availability.
 
-## Batteries Included (No Assembly Required)
+## Batteries Included, No Assembly Required
 1. RKE2
 1. OpenEBS Hostpath
 1. KOTS
@@ -30,6 +30,16 @@
 ## Problems this doesn't solve
 - Learning curve for RKE2 support (also a problem with kURL)
 
+## Current Limitations
+- Linux AMD64 architecture only
+- Only support for default CNI (can be changed later)
+- Single Node (can be changed later)
+
+# Metrics 
+- New install console up time
+- Baseline CPU, Memory
+- Airgap size
+
 ## MVP Goals
 - [ ] Airgap installs
 - [ ] Airgap Updates
@@ -49,7 +59,8 @@
 - [ ] Github Action for dependency update
 - [ ] Enforce conventional commits
 - [ ] TestGrid or Github Actions for Testing
-- [ ] (Future) EKCO replacement (r8d-agent?)
+- [ ] Developer Cache - don't download dependencies that are already installed 
+- [ ] (Future) EKCO replacement (r8d-installer agent)
 - [ ] (Future) CIS Compliance Action
 - [ ] (Future) Multi-node support
 

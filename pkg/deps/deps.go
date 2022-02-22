@@ -3,6 +3,8 @@ package deps
 import (
 	"fmt"
 	"log"
+	"os"
+	"path"
 
 	"github.com/pkg/errors"
 	"github.com/replicatedhq/r8d-installer/pkg/component"
@@ -17,7 +19,7 @@ type Manifest struct {
 }
 
 func Build(manifest Manifest) error {
-	log.Default()
+	logger := log.Default()
 
 	components, err := convertManifestToComponents(manifest)
 	if err != nil {
@@ -25,34 +27,25 @@ func Build(manifest Manifest) error {
 	}
 
 	for _, buildable := range components {
+		logger.Printf("building assets for %s", buildable.GetName())
 
-		err = processBinaries(buildable)
+		err = processBinaries(logger, buildable)
 		if err != nil {
 			return errors.Wrapf(err, "failed to process binaries for %s", buildable.GetName())
 		}
 
-		_, err = buildable.GetManifest()
+		err = processImagesArchive(logger, buildable)
 		if err != nil {
-			return errors.Wrapf(err, "failed to get manifest for %s", buildable.GetName())
+			return errors.Wrapf(err, "failed to get image archive for %s", buildable.GetName())
 		}
-		// copy to assets
 
-		_, err = buildable.GetImageArchive()
+		err = processManifests(logger, buildable)
 		if err != nil {
-			return errors.Wrapf(err, "failed to get manifest for %s", buildable.GetName())
+			return errors.Wrapf(err, "failed to get manifests for %s", buildable.GetName())
 		}
-		// copy to assets
-
 	}
 
 	return nil
-
-	// create the Components
-	// iterate through Components and build them
-	// 		get the binaries
-	// 		generate the manifests (using binaries as necessary)
-	// 		generate the images bundles. Download, archive and compress
-
 }
 
 func Update(old Manifest) error {
@@ -74,8 +67,8 @@ func convertManifestToComponents(manifest Manifest) ([]component.Builder, error)
 	return components, nil
 }
 
-func processBinaries(buildable component.Builder) error {
-
+func processBinaries(logger *log.Logger, buildable component.Builder) error {
+	logger.Printf("└── processing binaries for %s", buildable.GetName())
 	paths, err := buildable.GetBinaries()
 	if err != nil {
 		return errors.Wrap(err, "failed to get binaries")
@@ -88,6 +81,54 @@ func processBinaries(buildable component.Builder) error {
 		if err != nil {
 			return errors.Wrapf(err, "failed to move %s to %s", src, dst)
 		}
+	}
+
+	return nil
+}
+
+func processImagesArchive(logger *log.Logger, buildable component.Builder) error {
+	logger.Printf("└── processing image archive for %s", buildable.GetName())
+	src, err := buildable.GetImageArchive()
+	if err != nil {
+		return errors.Wrap(err, "failed to get image archive")
+	}
+
+	if src == "" {
+		return nil
+	}
+
+	dst := fmt.Sprintf(assetPath, buildable.GetName(), "images")
+
+	err = utils.MoveFile(src, dst)
+	if err != nil {
+		return errors.Wrapf(err, "failed to move %s to %s", src, dst)
+	}
+
+	return nil
+}
+
+func processManifests(logger *log.Logger, buildable component.Builder) error {
+	logger.Printf("└── processing manifests for %s", buildable.GetName())
+	yaml, err := buildable.GetManifests()
+	if err != nil {
+		return errors.Wrap(err, "failed to get manifests")
+	}
+
+	if yaml == "" {
+		return nil
+	}
+
+	dir := fmt.Sprintf(assetPath, buildable.GetName(), "manifests")
+	err = os.MkdirAll(dir, 0755)
+	if err != nil {
+		return errors.Wrapf(err, "failed to create directory %s", dir)
+	}
+
+	dst := path.Join(dir, buildable.GetName()+".yaml")
+
+	err = os.WriteFile(dst, []byte(yaml), 0644)
+	if err != nil {
+		return errors.Wrapf(err, "failed to write manifests file %s", dst)
 	}
 
 	return nil

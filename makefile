@@ -2,7 +2,7 @@
 
 .PHONY: r8d-installer
 r8d-installer: fmt vet
-	go build -o bin/r8d-installer ./cmd/r8d-installer
+	go build -o bin/r8d-installer ./cmd/installer
 
 .PHONY: fmt
 fmt:
@@ -14,8 +14,12 @@ vet:
 
 .PHONY: deps
 deps:
-	go run -tags deps ./cmd/r8d-deps build --config ./cmd/r8d-installer/manifest.toml
+	go run -tags deps ./cmd/deps build --config ./cmd/installer/manifest.toml
 
 .PHONY: update
 update:
-	go run -tags deps ./cmd/r8d-deps update ./cmd/r8d-installer/manifest.toml
+	go run -tags deps ./cmd/deps update ./cmd/installer/manifest.toml
+
+.PHONY: clean
+clean:
+	rm -rf bin pkg/component/*/assets

@@ -8,8 +8,9 @@ Any customizations go directorly into the RKE yaml as would be an ordinary insta
 
 ## Repo Structure
 - cmd
-    - r8d-installer: installer command
-    - r8d-deps: builds the assets for everything and detects changes
+    - installer: installer command
+    - deps: builds the assets for everything and detects changes
+    - agent: monitors the host, performs automation, and sends mertics back to Replicated management console.
 - pkg
     - cli
         - host-preflight - pull in library and also has assets

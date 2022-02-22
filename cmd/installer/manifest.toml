@@ -1,4 +1,4 @@
-# Generated file, do not modify.  Run the `r8d-deps update` command from `make` or \
+# Generated file, do not modify.  Run the `r8d-deps update` command from `make update` or \
 # the github action to generate updated values.
 rke2="v1.23.3+rke2r1"
 kots="v1.63.0"
