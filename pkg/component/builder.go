@@ -9,7 +9,7 @@ type Builder interface {
 	// GetName returns the lower-camelcase name of this component
 	GetName() string
 
-	// GetManfest returns a single multi-doc YAML string that encompasses all
+	// GetManfest returns a file path to a single multi-doc YAML that encompasses all
 	// manifests for this component.
 	GetManifests() (string, error)
 

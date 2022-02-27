@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"github.com/containers/image/v5/copy"
@@ -99,7 +98,7 @@ func CreateArchive(name string, images []string) (string, error) {
 	}
 
 	// Add all the other files
-	if err = copyDirToTar(tw, tmpDir); err != nil {
+	if err = CopyDirToTar(tw, tmpDir); err != nil {
 		return "", errors.Wrap(err, "failed to copy temp dir to tar")
 	}
 
@@ -313,53 +312,4 @@ func addFileToTar(tw *tar.Writer, file string) error {
 	}
 
 	return nil
-}
-
-func copyDirToTar(tw *tar.Writer, dstDir string) error {
-
-	// Based on the following:
-	// https://medium.com/@skdomino/taring-untaring-files-in-go-6b07cf56bc0
-	return filepath.Walk(dstDir, func(file string, fi os.FileInfo, err error) error {
-
-		// return on any error
-		if err != nil {
-			return err
-		}
-
-		// return on non-regular files (thanks to [kumo](https://medium.com/@komuw/just-like-you-did-fbdd7df829d3) for this suggested update)
-		if !fi.Mode().IsRegular() {
-			return nil
-		}
-
-		// create a new dir/file header
-		header, err := tar.FileInfoHeader(fi, fi.Name())
-		if err != nil {
-			return err
-		}
-
-		// update the name to correctly reflect the desired destination when untaring
-		header.Name = strings.TrimPrefix(strings.Replace(file, dstDir, "", -1), string(filepath.Separator))
-
-		// write the header
-		if err := tw.WriteHeader(header); err != nil {
-			return err
-		}
-
-		// open files for taring
-		f, err := os.Open(file)
-		if err != nil {
-			return err
-		}
-
-		// copy file data into tar writer
-		if _, err := io.Copy(tw, f); err != nil {
-			return err
-		}
-
-		// manually close here after each file operation; defering would cause each file close
-		// to wait until all operations have completed.
-		f.Close()
-
-		return nil
-	})
 }

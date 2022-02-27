@@ -4,15 +4,13 @@ package kots
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
-	"path/filepath"
+	"runtime"
 
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
-	"github.com/replicatedhq/kots/pkg/upstream"
-	upstreamtypes "github.com/replicatedhq/kots/pkg/upstream/types"
 	"github.com/replicatedhq/r8d-installer/pkg/utils"
 )
 
@@ -28,46 +26,61 @@ func (k *KOTS) GetName() string {
 
 // GetManifest merges all the YAML files for KOTS into a single YAML.
 // Based on the `kot admin-console generate-manifest` command
-// https://github.com/replicatedhq/kots/blob/436b9212ef59494e91d4dde03f165665ec105237/cmd/kots/cli/admin-console-generate-manifests.go
 func (k *KOTS) GetManifests() (string, error) {
 
-	tmpDir, err := os.MkdirTemp("", "kots-manifest-")
+	var binaryName string
+	switch runtime.GOOS {
+	case "darwin":
+		binaryName = "kots_darwin_all.tar.gz"
+	case "linux":
+		binaryName = "kots_linux_amd64.tar.gz"
+	}
+
+	cli, err := utils.DownloadAssetFromGithubRelease("replicatedhq", "kots", k.GetVersion(), binaryName)
 	if err != nil {
-		return "", errors.Wrap(err, "failed to create kots manifest temp dir")
+		return "", errors.Wrapf(err, "failed to download %s", binaryName)
 	}
+	defer os.Remove(cli)
 
-	options := upstreamtypes.WriteOptions{
-		Namespace:      "default",
-		SharedPassword: "password",
-		// HTTPProxyEnvValue:    v.GetString("http-proxy"),
-		// HTTPSProxyEnvValue:   v.GetString("https-proxy"),
-		// NoProxyEnvValue:      v.GetString("no-proxy"),
-		IncludeMinio:         false,
-		IsMinimalRBAC:        false,
-		AdditionalNamespaces: nil,
-	}
-	adminConsoleFiles, err := upstream.GenerateAdminConsoleFiles(tmpDir, options)
+	// unpack into a temp dir
+	tmpDir, err := os.MkdirTemp("", "kots-cli-")
 	if err != nil {
-		return "", errors.Wrap(err, "failed to generate admin console files")
+		return "", errors.Wrap(err, "failed to create temp dir for kots cli bundle")
+	}
+	defer os.RemoveAll(tmpDir)
+
+	if err := utils.Untar(cli, tmpDir); err != nil {
+		return "", errors.Wrap(err, "failed to unpack kots cli bundle")
 	}
 
-	for _, file := range adminConsoleFiles {
-		fileRenderPath := filepath.Join(tmpDir, file.Path)
-		d, _ := filepath.Split(fileRenderPath)
-		if _, err := os.Stat(d); os.IsNotExist(err) {
-			if err := os.MkdirAll(d, 0744); err != nil {
-				return "", errors.Wrap(err, "failed to mkdir")
-			}
-		}
+	// exe cli
+	yamlDir, err := os.MkdirTemp("", "kots-manifests-")
+	if err != nil {
+		return "", errors.Wrap(err, "failed to create temp dir for kots manifests")
+	}
+	defer os.RemoveAll(yamlDir)
 
-		if err := ioutil.WriteFile(fileRenderPath, file.Content, 0644); err != nil {
-			return "", errors.Wrapf(err, "failed to write file %s", fileRenderPath)
-		}
+	args := []string{
+		"admin-console",
+		"generate-manifests",
+		fmt.Sprintf("--rootdir=%s", yamlDir),
+		"--with-minio=false",
+		"--namespace=default",
+		"--shared-password=password",
+	}
+	cmd := exec.Command(path.Join(tmpDir, "kots"), args...)
+	if err = cmd.Run(); err != nil {
+		return "", errors.Wrapf(err, "failed to run %s", cmd.String())
 	}
 
-	fmt.Printf("Admin Console manifests created in %s", filepath.Join(tmpDir, "admin-console"))
+	// merge manifest
+	manifest := path.Join(os.TempDir(), "kots.yaml")
+	os.Remove(manifest)
+	if err := utils.MergeYAML(yamlDir, manifest); err != nil {
+		return "", errors.Wrap(err, "failed to merge kots manifests")
+	}
 
-	return "", nil
+	return manifest, nil
 }
 
 // GetManifest returns a file path to the compressed airgap images for KOT.
@@ -102,11 +115,7 @@ func (k *KOTS) GetImageArchive() (string, error) {
 	}
 
 	// Rename the generic archive
-	ourDir, err := os.MkdirTemp("", "kots-image-archive-")
-	if err != nil {
-		return "", errors.Wrap(err, "failed to create temp dir for kots image archive")
-	}
-	destPath := path.Join(ourDir, "kots-image-archive.tar.zst")
+	destPath := path.Join(os.TempDir(), "kots-image-archive.tar.zst")
 	if err = os.Rename(archivePath, destPath); err != nil {
 		return "", errors.Wrap(err, "failed to rename kots image archive")
 	}

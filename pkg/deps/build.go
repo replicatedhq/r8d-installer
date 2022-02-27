@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
 
 	"github.com/pkg/errors"
 	"github.com/replicatedhq/r8d-installer/pkg/component"
@@ -74,13 +73,9 @@ func processImagesArchive(logger *log.Logger, buildable component.Builder) error
 
 func processManifests(logger *log.Logger, buildable component.Builder) error {
 	logger.Printf("└── processing manifests for %s", buildable.GetName())
-	yaml, err := buildable.GetManifests()
+	src, err := buildable.GetManifests()
 	if err != nil {
 		return errors.Wrap(err, "failed to get manifests")
-	}
-
-	if yaml == "" {
-		return nil
 	}
 
 	dir := fmt.Sprintf(assetPath, buildable.GetName(), "manifests")
@@ -89,11 +84,9 @@ func processManifests(logger *log.Logger, buildable component.Builder) error {
 		return errors.Wrapf(err, "failed to create directory %s", dir)
 	}
 
-	dst := path.Join(dir, buildable.GetName()+".yaml")
-
-	err = os.WriteFile(dst, []byte(yaml), 0644)
+	err = utils.MoveFile(src, dir)
 	if err != nil {
-		return errors.Wrapf(err, "failed to write manifests file %s", dst)
+		return errors.Wrapf(err, "failed to move %s to %s", src, dir)
 	}
 
 	return nil

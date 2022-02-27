@@ -27,6 +27,7 @@
 - Minimizes the amount of memorizing flags to enter into the cluster install command.
 - Allows the output of the installer to be logged to file while still printing to STDOUT
 - Doesn't require maintaining KOTS manifest changes in a separate place.
+- Consolidates all dependency updates as part of a single command that can be run nightly
 
 ## Problems this doesn't solve
 - Learning curve for RKE2 support (also a problem with kURL)

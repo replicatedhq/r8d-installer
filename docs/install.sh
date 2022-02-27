@@ -14,7 +14,7 @@ systemctl start rke2-server.service
 # Add the RKE2 Kube Tools to the path
 chmod 644 "/etc/rancher/rke2/rke2.yaml" # TODO: This can be controlled in the configuration file for the server
 echo "export KUBECONFIG=/etc/rancher/rke2/rke2.yaml" >> ~/.bashrc
-echo 'export PATH=$PATH:/var/lib/rancher/rke2/bin/' >> ~/.bashrccric
+echo 'export PATH=$PATH:/var/lib/rancher/rke2/bin/' >> ~/.bashrc
 echo "export CRI_CONFIG_FILE=/var/lib/rancher/rke2/agent/etc/crictl.yaml" >> ~/.bashrc
 
 # Install the CLI binaries
