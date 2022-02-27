@@ -5,3 +5,4 @@ velero-credentials
 .vscode
 
 bin
+tmp

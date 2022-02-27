@@ -25,6 +25,7 @@ Usage:
 	RunE: func(cmd *cobra.Command, args []string) error {
 		manifest := deps.Manifest{
 			RKE2: viper.GetString("rke2"),
+			KOTS: viper.GetString("kots"),
 		}
 		return deps.Build(manifest)
 	},

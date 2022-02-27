@@ -59,3 +59,24 @@ func DownloadAssetFromGithubRelease(owner, repo, tag, assetName string) (string,
 
 	return file.Name(), nil
 }
+
+// DownloadAssetFromGithubRelease returns a handle to the asset file for the given owner/repo and release tag.
+// It's assume the caller owns the temporary file handle returned.
+// TODO (dans): Add checksum validation
+func GetSourceFileFromGithubRelease(owner, repo, tag, path string) (string, error) {
+
+	fileContent, _, _, err := client.Repositories.GetContents(context.Background(), owner, repo, path, &github.RepositoryContentGetOptions{Ref: tag})
+	if err != nil {
+		return "", errors.Errorf("could not get file %s from repo %s/%s:%s", path, owner, repo, tag)
+	}
+	if fileContent == nil {
+		return "", errors.Errorf("file %s not found in release %s/%s:%s", path, owner, repo, tag)
+	}
+
+	content, err := fileContent.GetContent()
+	if err != nil {
+		return "", errors.Wrap(err, "failed to decode content from file")
+	}
+
+	return content, nil
+}

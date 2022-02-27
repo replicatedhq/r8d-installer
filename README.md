@@ -1,4 +1,4 @@
-# r8d-installer
+# (EXPERIMENTAL) r8d-installer 
 
 ## Philosphoy 
 1. Minimal dependencies - we only install what we need to set up a cluster and KOTS.
@@ -26,6 +26,7 @@
 - Can be bootstaped easily in a VM
 - Minimizes the amount of memorizing flags to enter into the cluster install command.
 - Allows the output of the installer to be logged to file while still printing to STDOUT
+- Doesn't require maintaining KOTS manifest changes in a separate place.
 
 ## Problems this doesn't solve
 - Learning curve for RKE2 support (also a problem with kURL)
@@ -54,7 +55,7 @@
 - [ ] Golang command to install the cluster
 - [ ] Host Preflights 
 - [ ] Troubleshoot bundling
-- [ ] KOTS-lite
+- [ ] KOTS-lite Image (remove unnecessary kubectl binaries)
 - [ ] Golang command for update.
 - [ ] Github Action for dependency update
 - [ ] Enforce conventional commits

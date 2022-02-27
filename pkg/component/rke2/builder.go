@@ -26,9 +26,9 @@ func (r *RKE2) GetManifests() (string, error) {
 // It's assume that the caller owns the file after calling.
 // RKE2 provides the pre-built compressed archive, so we'll just use that
 func (r *RKE2) GetImageArchive() (string, error) {
-	airgapImages, err := utils.DownloadAssetFromGithubRelease("rancher", "rke2", r.GetVersion(), "rke2-images-canal.linux-amd64.tar.zst")
+	airgapImages, err := utils.DownloadAssetFromGithubRelease("rancher", "rke2", r.GetVersion(), "rke2-images.linux-amd64.tar.zst")
 	if err != nil {
-		return "", errors.Wrap(err, "failed to download rke2-linux-amd64.tar.gz")
+		return "", errors.Wrap(err, "failed to download rke2-images.linux-amd64.tar.zst")
 	}
 
 	return airgapImages, nil
