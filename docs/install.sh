@@ -1,5 +1,6 @@
 #!/bin/bash
 # Author: K. Boyle & D. Stough
+# Purpose: this script demonstrates what it would be like to install an RKE2 cluster on a local machine with bash
 
 # TODO: Preflights
 # Check for NetworkManager `systemctl reload NetworkManager`

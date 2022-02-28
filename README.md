@@ -60,8 +60,9 @@
 - [ ] Golang command for update.
 - [ ] Github Action for dependency update
 - [ ] Enforce conventional commits
+- [ ] Golang command for upgrades
 - [ ] TestGrid or Github Actions for Testing
-- [ ] Developer Cache - don't download dependencies that are already installed 
+- [ ] (Future) Developer Cache - don't download dependencies that are already installed 
 - [ ] (Future) EKCO replacement (r8d-installer agent)
 - [ ] (Future) CIS Compliance Action
 - [ ] (Future) Multi-node support

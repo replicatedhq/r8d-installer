@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/containers/image/v5/copy"
@@ -22,6 +23,34 @@ import (
 type manifestJSON []map[string]interface{}
 
 type repositoryJSON map[string]interface{}
+
+var exists = struct{}{}
+
+type set map[string]struct{}
+
+const (
+	imageRe = `image: (?P<image>[[:alnum:]/\-_\.]*:[[:alnum:]/\-_\.]*)`
+)
+
+func GetImages(content string) []string {
+
+	imageSet := set{}
+
+	re := regexp.MustCompile(imageRe)
+	matches := re.FindAllString(content, -1)
+
+	for _, m := range matches {
+		image := re.FindStringSubmatch(m)[re.SubexpIndex("image")]
+		imageSet[image] = exists
+	}
+
+	imageList := []string{}
+	for k := range imageSet {
+		imageList = append(imageList, k)
+	}
+
+	return imageList
+}
 
 func CreateArchive(name string, images []string) (string, error) {
 
@@ -263,6 +292,12 @@ func extractAndFilter(tmpDir string, archive string) ([]byte, []byte, error) {
 
 		if hdr.Typeflag == tar.TypeReg {
 			outpath := path.Join(tmpDir, hdr.Name)
+
+			// if the layer already exits, we don't need to copy it again
+			if _, err := os.Stat(outpath); err == nil {
+				continue
+			}
+
 			if err := os.MkdirAll(path.Dir(outpath), 0755); err != nil {
 				return nil, nil, errors.Wrapf(err, "failed to create directory %s", outpath)
 			}

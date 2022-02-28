@@ -47,6 +47,8 @@ flowchart LR
 ## Component Interfaces
 
 ### Build Interface
+1. GetName()
+1. GetVersion()
 1. GetManifest()
 1. GetImages()
 1. GetBinaries()
@@ -64,9 +66,7 @@ flowchart LR
 ## Questions to Answer
 1. Does RKE2 automatically sync the manifests directory without restart? YES
 1. Can you use the RKE2 image directory for non-rke2 images? YES, it appears on restart only
-
-### Unanswered
-1. Will removing/modifying a file in the manifests directory cause RKE2 to update (useful for updates)? ?
+1. Will removing/modifying a file in the manifests directory cause RKE2 to update (useful for updates)? YES, updates will be performed every 1m https://github.com/rancher/rke2/issues/826#issuecomment-812130335 
 
 ## Do we need an interface for addons?
 - No, because we should never need to add new ones.

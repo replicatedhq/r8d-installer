@@ -83,7 +83,7 @@ func (k *KOTS) GetManifests() (string, error) {
 	return manifest, nil
 }
 
-// GetManifest returns a file path to the compressed airgap images for KOT.
+// GetManifest returns a file path to the compressed airgap images for KOTS.
 // It's assume that the caller owns the file after calling.
 // KOTS provides the pre-built compressed archive, but it's organized weirdly and there are unneeded images,
 // so we'll pull images from the ENV and package them outselves

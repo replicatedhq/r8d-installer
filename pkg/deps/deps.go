@@ -9,8 +9,9 @@ import (
 const assetPath = "./pkg/component/%s/assets/%s"
 
 type Manifest struct {
-	RKE2 string
-	KOTS string
+	RKE2    string
+	KOTS    string
+	OpenEBS string
 }
 
 func Build(manifest Manifest) error {

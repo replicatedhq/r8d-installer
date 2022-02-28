@@ -7,7 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/replicatedhq/r8d-installer/pkg/component"
-	"github.com/replicatedhq/r8d-installer/pkg/component/kots"
+	"github.com/replicatedhq/r8d-installer/pkg/component/openebs"
 	"github.com/replicatedhq/r8d-installer/pkg/utils"
 )
 
@@ -21,10 +21,15 @@ func convertManifestToComponents(manifest Manifest) ([]component.Builder, error)
 	}
 	// components = append(components, rke2.New(manifest.RKE2))
 
+	if manifest.OpenEBS == "" {
+		return nil, errors.New("no OpenEBS version specified")
+	}
+	components = append(components, openebs.New(manifest.OpenEBS))
+
 	if manifest.KOTS == "" {
 		return nil, errors.New("no KOTS version specified")
 	}
-	components = append(components, kots.New(manifest.KOTS))
+	// components = append(components, kots.New(manifest.KOTS))
 
 	// TODO (dans): other components here
 
