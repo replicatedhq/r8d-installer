@@ -24,9 +24,15 @@ Usage:
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		manifest := deps.Manifest{
-			RKE2:    viper.GetString("rke2"),
-			KOTS:    viper.GetString("kots"),
-			OpenEBS: viper.GetString("openebs"),
+			KOTS:            viper.GetString("kots"),
+			OpenEBS:         viper.GetString("openebs"),
+			RKE2:            viper.GetString("rke2"),
+			Velero:          viper.GetString("velero"),
+			VeleroAWS:       viper.GetString("velero-for-aws"),
+			VeleroAzure:     viper.GetString("velero-for-azure"),
+			VeleroGCP:       viper.GetString("velero-for-gcp"),
+			VeleroLVP:       viper.GetString("velero-local-volume-provider"),
+			VeleroKurlUtils: viper.GetString("velero-kurl-util"),
 		}
 		return deps.Build(manifest)
 	},

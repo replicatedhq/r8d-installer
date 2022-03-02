@@ -9,9 +9,15 @@ import (
 const assetPath = "./pkg/component/%s/assets/%s"
 
 type Manifest struct {
-	RKE2    string
-	KOTS    string
-	OpenEBS string
+	KOTS            string
+	OpenEBS         string
+	RKE2            string
+	Velero          string
+	VeleroAWS       string
+	VeleroAzure     string
+	VeleroGCP       string
+	VeleroLVP       string
+	VeleroKurlUtils string
 }
 
 func Build(manifest Manifest) error {

@@ -14,6 +14,11 @@ import (
 	"github.com/replicatedhq/r8d-installer/pkg/utils"
 )
 
+const (
+	owner = "replicatedhq"
+	repo  = "kots"
+)
+
 // GetVersion returns the version of KOTS used in this binary
 func (k *KOTS) GetVersion() string {
 	return k.Version
@@ -89,7 +94,7 @@ func (k *KOTS) GetManifests() (string, error) {
 // so we'll pull images from the ENV and package them outselves
 // TODO (dans): this is a hack. We should just publish the required bundle in KOTS, or at least the manifest for r8d-installer
 func (k *KOTS) GetImageArchive() (string, error) {
-	imageEnvContext, err := utils.GetSourceFileFromGithubRelease("replicatedhq", "kots", k.GetVersion(), ".image.env")
+	imageEnvContext, err := utils.GetSourceFileFromGithubRelease(owner, repo, k.GetVersion(), ".image.env")
 	if err != nil {
 		return "", errors.Wrap(err, "failed to download .image.env file")
 	}
@@ -143,10 +148,10 @@ func getImageTags(input, output *map[string]string, tag string) error {
 	return nil
 }
 
-// GetBinaries returns a file path to the compressed airgap images for KOTS.
+// GetBinaries returns a file path to the KOTS binary.
 // This will be the kubectl plugin.
 func (k *KOTS) GetBinaries() ([]string, error) {
-	cli, err := utils.DownloadAssetFromGithubRelease("replicatedhq", "kots", k.GetVersion(), "kots_linux_amd64.tar.gz")
+	cli, err := utils.DownloadAssetFromGithubRelease(owner, repo, k.GetVersion(), "kots_linux_amd64.tar.gz")
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to download kots_linux_amd64.tar.gz")
 	}

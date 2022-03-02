@@ -84,7 +84,7 @@ func (o *OpenEBS) GetImageArchive() (string, error) {
 	return destPath, nil
 }
 
-// GetBinaries returns nil as OpenEBS does not have any associated executables1.
+// GetBinaries returns nil as OpenEBS does not have any associated executables.
 func (o *OpenEBS) GetBinaries() ([]string, error) {
 	return nil, nil
 }

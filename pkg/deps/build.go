@@ -7,7 +7,10 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/replicatedhq/r8d-installer/pkg/component"
+	"github.com/replicatedhq/r8d-installer/pkg/component/kots"
 	"github.com/replicatedhq/r8d-installer/pkg/component/openebs"
+	"github.com/replicatedhq/r8d-installer/pkg/component/rke2"
+	"github.com/replicatedhq/r8d-installer/pkg/component/velero"
 	"github.com/replicatedhq/r8d-installer/pkg/utils"
 )
 
@@ -19,7 +22,7 @@ func convertManifestToComponents(manifest Manifest) ([]component.Builder, error)
 	if manifest.RKE2 == "" {
 		return nil, errors.New("no RKE2 version specified")
 	}
-	// components = append(components, rke2.New(manifest.RKE2))
+	components = append(components, rke2.New(manifest.RKE2))
 
 	if manifest.OpenEBS == "" {
 		return nil, errors.New("no OpenEBS version specified")
@@ -29,9 +32,12 @@ func convertManifestToComponents(manifest Manifest) ([]component.Builder, error)
 	if manifest.KOTS == "" {
 		return nil, errors.New("no KOTS version specified")
 	}
-	// components = append(components, kots.New(manifest.KOTS))
+	components = append(components, kots.New(manifest.KOTS))
 
-	// TODO (dans): other components here
+	if manifest.Velero == "" {
+		return nil, errors.New("no Velero version specified")
+	}
+	components = append(components, velero.New(manifest.Velero, manifest.VeleroAWS, manifest.VeleroAzure, manifest.VeleroGCP, manifest.VeleroLVP, manifest.VeleroKurlUtils))
 
 	return components, nil
 }
@@ -81,6 +87,11 @@ func processManifests(logger *log.Logger, buildable component.Builder) error {
 	src, err := buildable.GetManifests()
 	if err != nil {
 		return errors.Wrap(err, "failed to get manifests")
+	}
+
+	// Empty string means no manifests
+	if src == "" {
+		return nil
 	}
 
 	dir := fmt.Sprintf(assetPath, buildable.GetName(), "manifests")
