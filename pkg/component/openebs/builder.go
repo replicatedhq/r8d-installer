@@ -1,3 +1,4 @@
+//go:build deps
 // +build deps
 
 package openebs

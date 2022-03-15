@@ -1,4 +1,5 @@
-// +build !deps
+//go:build r8d
+// +build r8d
 
 package component
 

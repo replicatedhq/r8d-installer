@@ -52,7 +52,7 @@
 - [ ] Test Coverage
 ## TODO:
 - [X] Finish online install
-- [ ] Golang command to collect airgap resource
+- [X] Golang command to collect airgap resource
 - [ ] Golang command to install the cluster
 - [ ] Host Preflights 
 - [ ] Troubleshoot bundling
